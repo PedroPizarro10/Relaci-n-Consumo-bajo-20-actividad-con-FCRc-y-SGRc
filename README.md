@@ -13,5 +13,5 @@ SGRc: Es la tasa específica de crecimiento corregida de acuerdo al modelo de cr
 FCRc: Es el factor de conversión de alimento corregdo de acuerdo al modelo de crecimiento previamnete establecido para el plantel en cultivo. (variable respuesta)
 Número total de observaciones : 271 observaciones.
 
-El objetivo del análisis es determinar la correlación existente entre el consumo  de alimento bajo el 20% de actividad y las variables SGRc y FCrc.
+El objetivo del análisis es determinar la correlación existente entre el consumo  de alimento bajo el 20% de actividad y las variables SGRc y FCRc.
   
