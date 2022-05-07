@@ -1,0 +1,73 @@
+---
+title: "Consumo 20%, SGRc y FCRc"
+author: "Pedro Pizarro"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(datasets)
+library(ggplot2)
+library(readxl)
+library(stats)
+library(lme4)
+library(graphics)
+library(stats)
+```
+
+```{r}
+BDatos <- read_excel("Base Datos %20, FCR y SGR.xlsx")
+summary(BDatos)
+```
+
+```{r}
+BDatos$Año <- as.factor(BDatos$Año)
+BDatos$`Fecha cosecha` <- as.Date(BDatos$`Fecha cosecha`)
+summary(BDatos)
+str(BDatos)
+```
+
+```{r}
+plot(density(BDatos$FCRc))
+plot(density(BDatos$SGRc))
+plot(density(BDatos$`Consumo Bajo 20%  de actividad`))
+```
+
+```{r}
+plot (ecdf(BDatos$`Consumo Bajo 20%  de actividad`))
+plot (ecdf(BDatos$FCRc))
+plot (ecdf(BDatos$SGRc))
+```
+
+```{r}
+ggplot(BDatos, aes(`Consumo Bajo 20%  de actividad`))+theme_gray()+
+  geom_histogram(bins = 15, color= "black",fill="light blue")+
+  labs(title="Histograma Consumo 20%", x="Consumo Bajo 20% actividad", 
+       y="Frecuencia")+ Mi_gráfico
+```
+
+```{r}
+Mi_gráfico = theme(axis.title.x = element_text(size = 16), axis.text.x = element_text(size = 12), axis.title.y = element_text(size = 16), axis.text.y = element_text(size = 12))
+```
+
+```{r}
+ggplot(BDatos, aes(FCRc))+theme_gray()+
+  geom_histogram(bins = 15, color= "black",fill="light green")+
+  labs(title="Histograma FCRc", x="FRCc (conversión)", 
+       y="Frecuencia")+ Mi_gráfico
+```
+
+```{r}
+ggplot(BDatos, aes(SGRc))+theme_gray()+
+  geom_histogram(bins = 15, color= "black",fill="light yellow")+
+  labs(title="Histograma SGRc", x="SGRc (crecimiento)", 
+       y="Frecuencia")+ Mi_gráfico
+```
+
+```{r}
+ggplot(BDatos, aes(x=`Consumo Bajo 20%  de actividad`, y=SGRc)) +
+    geom_boxplot()
+```
+
+
+
