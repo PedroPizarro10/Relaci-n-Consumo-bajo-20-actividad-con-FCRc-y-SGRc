@@ -1,6 +1,6 @@
 ## Consumo de alimento en salmones bajo 20% de actividad y su relación con FCRc y SGRc
 
-## Autor##
+## Autor
 Pedro Pizarro
 
 ## Descripción del Problema a Resolver
