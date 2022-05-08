@@ -1,0 +1,65 @@
+---
+title: "Consumo 20%, SGRc y FCRc"
+author: "Pedro Pizarro"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(datasets)
+library(ggplot2)
+library(readxl)
+library(tidyr)
+library(tidyr)
+library(dplyr)
+```
+
+
+```{r setup, include=FALSE}
+```
+
+
+```{r setup, include=FALSE}
+library(stats)
+library(lme4)
+library(graphics)
+library(stats)
+```
+
+```{r}
+plot (density(BDatos$FCRc))
+plot (density(BDatos$SGRc))
+plot (density(BDatos$`Consumo Bajo 20%  de actividad`))
+```
+
+```{r}
+Base_Datos_20_FCR_y_SGR %>% mutate (Consumo = (`Consumo Bajo 20%  de actividad`*100))
+```
+```{r}
+Consumo_100 <- Base_Datos_20_FCR_y_SGR %>% mutate (Consumo = (`Consumo Bajo 20%  de actividad`*100))
+
+```
+
+```{r}
+Consumo_100 %>% mutate(FCRc_porc=(FCRc*100))
+```
+
+```{r}
+FCR_100 <- Consumo_100 %>% mutate(FCRc_porc=(FCRc*100))
+
+```
+
+```{r}
+FCR_100 %>% mutate (SGR_porc= (SGRc*100))
+BDatos_2 <- FCR_100 %>% mutate (SGR_porc= (SGRc*100))
+
+
+```
+```{r}
+BDatos_2 %>% select (Consumo,FCRc_porc,SGR_porc)
+Datos_imp<-BDatos_2 %>% select (Consumo,FCRc_porc,SGR_porc)
+head(Datos_imp)
+summary(Datos_imp)
+```
+
+
