@@ -10,16 +10,7 @@ library(datasets)
 library(ggplot2)
 library(readxl)
 library(tidyr)
-library(tidyr)
 library(dplyr)
-```
-
-
-```{r setup, include=FALSE}
-```
-
-
-```{r setup, include=FALSE}
 library(stats)
 library(lme4)
 library(graphics)
@@ -33,6 +24,7 @@ plot (density(BDatos$`Consumo Bajo 20%  de actividad`))
 ```
 
 ```{r}
+
 Base_Datos_20_FCR_y_SGR %>% mutate (Consumo = (`Consumo Bajo 20%  de actividad`*100))
 ```
 ```{r}

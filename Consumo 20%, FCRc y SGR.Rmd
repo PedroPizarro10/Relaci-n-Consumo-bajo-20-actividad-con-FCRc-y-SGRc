@@ -9,12 +9,11 @@ knitr::opts_chunk$set(echo = TRUE)
 library(datasets)
 library(ggplot2)
 library(readxl)
-library(stats)
+library(tidyr)
+library(dplyr)
 library(lme4)
 library(graphics)
 library(stats)
-library(tidyr)
-library(dplyr)
 ```
 
 ```{r}
@@ -31,7 +30,7 @@ str(BDatos)
 ```{r}
 plot (density(BDatos$FCRc))
 plot (density(BDatos$SGRc))
-plot (density(BDatos$`Consumo Bajo 20%  de actividad`))
+plot (density(BDatos$`Consumo Bajo 20% de actividad`))
 ```
 
 ```{r}
@@ -39,9 +38,9 @@ Mi_gráfico = theme(axis.title.x = element_text(size = 16), axis.text.x = elemen
 ```
 
 ```{r}
-ggplot(BDatos, aes(`Consumo Bajo 20%  de actividad`))+theme_gray()+
+ggplot(BDatos, aes(`Consumo Bajo 20% de actividad`))+theme_gray()+
   geom_histogram(bins = 15, color= "black",fill="light blue")+
-  labs(title="Histograma Consumo 20%", x="Consumo Bajo 20% actividad", 
+  labs(title="Histograma Consumo 20%", x="Consumo Bajo 20% actividad",
        y="Frecuencia")+ Mi_gráfico
 ```
 
