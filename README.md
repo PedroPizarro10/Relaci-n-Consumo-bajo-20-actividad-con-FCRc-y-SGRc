@@ -14,15 +14,15 @@ de los peces medido con estos dos parámetros.
 
 ## Descripción de las variables de estudio
 
-Consumo de alimento bajo 20% de actividad: Es la cantidad de alimento consumida u ofertada medida en % bajo el 20% de actividad que mide el sofware. (variable predictora)
+Consumo de alimento bajo 20% de actividad: Es la cantidad de alimento consumida u ofertada medida en % bajo el 20% de actividad que mide el sofware. (variable predictora).
 
 FCRc : Es el factor de conversión de alimento. Es uan medida de eficiencia de conversión de alimento en kilos de carne producida. Eñ factor está corregido en base a un
-       modelo de crecimiento y se espresa en %. (variable respuesta)
+       modelo de crecimiento y se espresa en %. (variable respuesta).
 
-SGRc: Es la tasa de crecimiento específico. Mide la eficeincia del crecimiento en el tiempo.Eñ factor está corregido en base a un modelo de crecimiento y se espresa
-      en %. (variable respuesta)
+SGRc : Es la tasa de crecimiento específico. Mide la eficeincia del crecimiento en el tiempo.Eñ factor está corregido en base a un modelo de crecimiento y se espresa
+      en %. (variable respuesta).
      
-## Numero de observaciones
+## Número de observaciones
 
 La base de datos contiene 271 observaciones.
 
