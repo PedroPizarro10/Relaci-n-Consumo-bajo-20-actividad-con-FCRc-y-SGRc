@@ -10,9 +10,16 @@ Pedro PIzarro
 ## Descripción de las variables de estudio, los factores que se desea analizar y el número total de obsservaciones.
 
 Consumo de alimento bajo 20% de actividad: Es la parte expresada en % del total del consumo en el ciclo productivo que los peces consumieron bajo el 20% del indicador de actividad (variable predictora)
+
 SGRc: Es la tasa específica de crecimiento corregida de acuerdo al modelo de creciemiento previamente establecido para el plantel en cultivo. (variable respuesta)
+
 FCRc: Es el factor de conversión de alimento corregdo de acuerdo al modelo de crecimiento previamnete establecido para el plantel en cultivo. (variable respuesta)
-Número total de observaciones : 270 observaciones.
+<<<<<<< HEAD
+Número total de observaciones : 271 observaciones.
+=======
+
+Número total de observaciones : 271 observaciones.
+>>>>>>> ba6ead14b686989f1b2d78c34055cb6ef976eac7
 
 El objetivo del análisis es determinar la correlación existente entre el consumo  de alimento bajo el 20% de actividad y las variables SGRc y FCRc.
 
