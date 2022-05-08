@@ -61,5 +61,9 @@ Datos_imp<-BDatos_2 %>% select (Consumo,FCRc_porc,SGR_porc)
 head(Datos_imp)
 summary(Datos_imp)
 ```
+```{r}
+mutate (BDatos, Consumo = (`Consumo Bajo 20%  de actividad`*100), FCRc_porc=(FCRc*100), SGR_porc= (SGRc*100))
+```
+
 
 
