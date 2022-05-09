@@ -17,20 +17,30 @@ library(stats)
 ```
 
 ```{r}
-BDatos <- read_excel("Base Datos %20, FCR y SGR.xlsx")
+read_excel("Base_Datos_Cons_FCR_SGR.xlsx")
+BDatos <-read_excel("Base_Datos_Cons_FCR_SGR.xlsx")
+```
+```{r}
 summary(BDatos)
 ```
 ```{r}
 BDatos$Año <- as.factor(BDatos$Año)
-BDatos$`Fecha cosecha` <- as.Date(BDatos$`Fecha cosecha`)
+BDatos$`Fecha_cosecha` <- as.Date(BDatos$`Fecha_cosecha`)
 summary(BDatos)
 str(BDatos)
 ```
 
 ```{r}
+plot (density(BDatos$`Consumo Bajo 20 actividad`))
 plot (density(BDatos$FCRc))
 plot (density(BDatos$SGRc))
-plot (density(BDatos$`Consumo Bajo 20% de actividad`))
+
+```
+
+```{r}
+plot (ecdf(BDatos$`Consumo Bajo 20 actividad`))
+plot (ecdf(BDatos$FCRc))
+plot (ecdf(BDatos$SGRc))
 ```
 
 ```{r}
@@ -38,20 +48,18 @@ Mi_gráfico = theme(axis.title.x = element_text(size = 16), axis.text.x = elemen
 ```
 
 ```{r}
-ggplot(BDatos, aes(`Consumo Bajo 20% de actividad`))+theme_gray()+
+ggplot(BDatos, aes(`Consumo Bajo 20 actividad`))+theme_gray()+
   geom_histogram(bins = 15, color= "black",fill="light blue")+
-  labs(title="Histograma Consumo 20%", x="Consumo Bajo 20% actividad",
+  labs(title="Histograma Consumo bajo 20% actividad", x="Consumo bajo 20% actividad", 
        y="Frecuencia")+ Mi_gráfico
 ```
-
-
 
 ```{r}
 ggplot(BDatos, aes(FCRc))+theme_gray()+
   geom_histogram(bins = 15, color= "black",fill="light green")+
-  labs(title="Histograma FCRc", x="FRCc (conversión)", 
-       y="Frecuencia")+ Mi_gráfico
+  labs(title="Histograma FCRc", x="FRCc (conversión)",y="Frecuencia")+ Mi_gráfico
 ```
+
 
 ```{r}
 ggplot(BDatos, aes(SGRc))+theme_gray()+
@@ -61,12 +69,27 @@ ggplot(BDatos, aes(SGRc))+theme_gray()+
 ```
 
 ```{r}
-ggplot(BDatos, aes(x=`Consumo Bajo 20%  de actividad`, y=SGRc)) +
+ggplot(BDatos, aes(x=`Consumo Bajo 20 actividad`, y=FCRc)) +
     geom_boxplot()
 ```
 
 ```{r}
-ggplot(BDatos, aes(x=`Consumo Bajo 20%  de actividad`, y=FCRc)) +
+ggplot(BDatos, aes(x=`Consumo Bajo 20 actividad`, y=SGRc)) +
     geom_boxplot()
+
 ```
+
+```{r}
+BDatos_mod <- BDatos %>% mutate(Consumo_20 = (`Consumo Bajo 20 actividad`*100), FCRc_porc= (FCRc*100), SGR_porc =(SGRc*100))
+```
+
+```{r}
+BDatos_mod %>% select (Año, Centro, Consumo_20, FCRc_porc,SGR_porc)
+BDatos_imp <- BDatos_mod %>% select (Año, Centro, Consumo_20, FCRc_porc,SGR_porc)
+summary(BDatos_imp)
+```
+```{r}
+BDatos_imp$Año<- as.factor(BDatos_imp$Año)
+```
+
 
