@@ -25,7 +25,9 @@ summary(BDatos)
 ```
 ```{r}
 BDatos$Año <- as.factor(BDatos$Año)
-BDatos$`Fecha_cosecha` <- as.Date(BDatos$`Fecha_cosecha`)
+BDatos$`Fecha_cosecha` <- as.factor(BDatos$`Fecha_cosecha`)
+BDatos$Jaula <-as.factor(BDatos$Jaula)
+BDatos$Centro <- as.factor(BDatos$Centro)
 summary(BDatos)
 str(BDatos)
 ```
@@ -80,16 +82,81 @@ ggplot(BDatos, aes(x=`Consumo Bajo 20 actividad`, y=SGRc)) +
 ```
 
 ```{r}
-BDatos_mod <- BDatos %>% mutate(Consumo_20 = (`Consumo Bajo 20 actividad`*100), FCRc_porc= (FCRc*100), SGR_porc =(SGRc*100))
+BDatos_mod <- BDatos %>% mutate(Consumo_20 = (`Consumo Bajo 20 actividad`*100), FCRc_porc= (FCRc*100), SGRc_porc =(SGRc*100))
 ```
 
 ```{r}
-BDatos_mod %>% select (Año, Centro, Consumo_20, FCRc_porc,SGR_porc)
-BDatos_imp <- BDatos_mod %>% select (Año, Centro, Consumo_20, FCRc_porc,SGR_porc)
+BDatos_mod %>% select (Año, Centro, Consumo_20, FCRc_porc,SGRc_porc)
+BDatos_imp <- BDatos_mod %>% select (Año, Centro, Consumo_20, FCRc_porc,SGRc_porc)
 summary(BDatos_imp)
+str(BDatos_imp)
 ```
 ```{r}
-BDatos_imp$Año<- as.factor(BDatos_imp$Año)
+ggplot(BDatos_imp , aes(x= Centro , y=FCRc_porc , fill= Centro)) +
+    geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="FCRc")+ Mi_gráfico
+```
+
+```{r}
+ggplot(BDatos_imp , aes(x= Centro , y=FCRc_porc ,fill=Centro)) +
+    geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="FCRc")+ Mi_gráfico
+```
+
+```{r}
+ggplot(BDatos_imp , aes(x= Consumo_20 , y=FCRc_porc)) +
+    geom_point(color= "brown") + labs( x="Consumo bajo 20% actividad" , y="FCRc")+ Mi_gráfico
+```
+
+```{r}
+ggplot(BDatos_imp , aes(x= Consumo_20 , y=SGRc_porc)) +
+    geom_point (color= "brown") + labs( x="Consumo bajo 20% actividad" , y="SGRc")+ Mi_gráfico
+```
+```{r}
+BDatos_imp %>% group_by(Centro) %>% summarise(Consumo_prom = mean(Consumo_20), FCRc_prom = mean(FCRc_porc), SGRc_prom =mean(SGRc_porc))
+```
+```{r}
+BDatos_gcentro <- BDatos_imp %>% group_by(Centro) %>% summarise(Consumo_prom = mean(Consumo_20), FCRc_prom = mean(FCRc_porc), SGRc_prom =mean(SGRc_porc)) %>% arrange(-Consumo_prom)
+```
+
+```{r}
+BDatos_imp %>% group_by(Año,Centro) %>% summarise(Consumo_prom = mean(Consumo_20), FCRc_prom = mean(FCRc_porc), SGRc_prom =mean(SGRc_porc)) %>% arrange(-Consumo_prom)
+```
+```{r}
+BDatos_imp %>% group_by(Año,Centro) %>% summarise(Consumo_prom = mean(Consumo_20), FCRc_prom = mean(FCRc_porc), SGRc_prom =mean(SGRc_porc)) %>% arrange(-Consumo_prom) %>% filter(Consumo_prom > 12)
+```
+
+```{r}
+BDatos_top <- BDatos_imp %>% group_by(Año,Centro) %>% summarise(Consumo_prom = mean(Consumo_20), FCRc_prom = mean(FCRc_porc), SGRc_prom =mean(SGRc_porc)) %>% arrange(-Consumo_prom) %>% filter(Consumo_prom > 12)
+```
+```{r}
+head(BDatos_top)
+```
+
+
+```{r}
+Consumo_20 <- BDatos_imp$Consumo_20
+FCRc_porc <- BDatos_imp$FCRc_porc
+SGRc_porc <- BDatos_imp$SGRc_porc
+```
+
+```{r}
+ ggplot(BDatos_imp , aes(x= Consumo_20 , y=FCRc_porc))+ geom_smooth(method = "lm", se= TRUE, color= "black")  + Mi_gráfico
+```
+
+```{r}
+ ggplot(BDatos_imp , aes(x= Consumo_20 , y=SGRc_porc))+ geom_smooth(method = "lm", se= TRUE, color= "black")  + Mi_gráfico
+```
+
+
+```{r}
+cor(BDatos_gcentro$Consumo_prom , BDatos_gcentro$FCRc_prom)
+cor(BDatos_gcentro$Consumo_prom , BDatos_gcentro$SGRc_prom)
+```
+```{r}
+cor(Consumo_20 , FCRc_porc)
+cor(Consumo_20 , SGRc_porc)
+```
+```{r}
+head(BDa)
 ```
 
 
