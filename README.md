@@ -15,7 +15,7 @@ de crecimiento (**SGRc**) al término del ciclo para corroborar o descartar la h
 
 - **FCRc :** Es el factor de conversión de alimento corregdo de acuerdo al modelo de crecimiento previamnete establecido para el plantel en cultivo. Mide la eficiencia de conversión de alimento a biomasa producida y se expresa en %. **_(variable respuesta)_**.
 
-- **SGRc:** Es la tasa específica de crecimiento corregida de acuerdo al modelo de crecimiento previamente establecido para el plantel en cultivo. Mide la eficiencia del crecimiento en el tiempo y se expresa en %. **_(variable respuesta)**_.    
+- **SGRc:** Es la tasa específica de crecimiento corregida de acuerdo al modelo de crecimiento previamente establecido para el plantel en cultivo. Mide la eficiencia del crecimiento en el tiempo y se expresa en %. **_(variable respuesta)_**.    
 
 ## Número de observaciones
 

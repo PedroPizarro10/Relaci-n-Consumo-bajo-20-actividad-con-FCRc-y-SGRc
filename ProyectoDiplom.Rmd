@@ -70,20 +70,6 @@ ggplot(BDatos, aes(SGRc))+theme_gray()+
        y="Frecuencia")+ Mi_gráfico
 ```
 
-```{r}
-ggplot(BDatos, aes(x=`Consumo Bajo 20 actividad`, y=FCRc)) +
-    geom_boxplot()
-```
-
-```{r}
-ggplot(BDatos, aes(x=`Consumo Bajo 20 actividad`, y=SGRc)) +
-    geom_boxplot()
-
-```
-
-```{r}
-BDatos_mod <- BDatos %>% mutate(Consumo_20 = (`Consumo Bajo 20 actividad`*100), FCRc_porc= (FCRc*100), SGRc_porc =(SGRc*100))
-```
 
 ```{r}
 BDatos_mod %>% select (Año, Centro, Consumo_20, FCRc_porc,SGRc_porc)
@@ -97,7 +83,7 @@ ggplot(BDatos_imp , aes(x= Centro , y=FCRc_porc , fill= Centro)) +
 ```
 
 ```{r}
-ggplot(BDatos_imp , aes(x= Centro , y=FCRc_porc ,fill=Centro)) +
+ggplot(BDatos_imp , aes(x=Centro , y=FCRc_porc ,fill=Centro)) +
     geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="FCRc")+ Mi_gráfico
 ```
 
@@ -156,7 +142,14 @@ cor(Consumo_20 , FCRc_porc)
 cor(Consumo_20 , SGRc_porc)
 ```
 ```{r}
-head(BDa)
+head(BDatos_top)
 ```
 
+```{r}
+head(BDatos_top)
+cor(BDatos_top$Consumo_prom , BDatos_top$FCRc_prom)
+cor(BDatos_top$Consumo_prom , BDatos_top$SGRc_prom)
+
+
+```
 
