@@ -42,19 +42,16 @@ str(BDatos)
 Las variables de mayor interés en este caso son **Consumo_bajo_20**, **FCRc** y **SGRc** que son variables cuantitativas continuas, mostrando al aplicar la función de densidad empírica y la función de distribución empírica acumulada la forma de la curva característica de este tipo de variables.
 
 ```{r}
+par(mfrow=c(2,3))
 plot (density(BDatos$`Consumo_ bajo_ 20`))
 plot (density(BDatos$FCRc))
 plot (density(BDatos$SGRc))
-
-```
-
-```{r}
 plot (ecdf(BDatos$`Consumo_ bajo_ 20`))
 plot (ecdf(BDatos$FCRc))
 plot (ecdf(BDatos$SGRc))
 ```
-
 En la base de datos importada los valores de las variables de estudio estaban en formato "número" y para una mejor comprensión estas variables deben expresarse en porcentajes. Por lo tanto, se realiza la transformación de estas a % y se seleccionan las variables de mayor interés para el estudio preliminar.
+
 
 ```{r}
 BDatos_mod <-BDatos %>% mutate(Consumo_20=`Consumo_ bajo_ 20` *100 , FCRc_porc=FCRc*100, SGRc_porc=SGRc*100) %>% select (Year_class, Centro, Consumo_20, FCRc_porc,SGRc_porc)
@@ -70,20 +67,20 @@ Los histogramas construidos para las tres variables demuestran que habrían valo
 
 ```{r}
 ggplot(BDatos_mod, aes(Consumo_20))+theme_gray()+
-  geom_histogram(bins = 15, color= "black",fill="light blue")+
+  geom_histogram(bins = 10, color= "black",fill="light blue")+
   labs(title="Histograma Consumo bajo 20% actividad", x="Consumo bajo 20% actividad", y="Frecuencia")+ Mi_gráfico
 ```
 
 ```{r}
 ggplot(BDatos_mod, aes(FCRc_porc))+theme_gray()+
-  geom_histogram(bins = 15, color= "black",fill="light green")+
+  geom_histogram(bins = 10, color= "black",fill="light green")+
   labs(title="Histograma FCRc", x="FCRc (conversión)",y="Frecuencia")+ Mi_gráfico
 ```
 
 
 ```{r}
 ggplot(BDatos_mod, aes(SGRc_porc))+theme_gray()+
-  geom_histogram(bins = 15, color= "black",fill="light yellow")+
+  geom_histogram(bins = 10, color= "black",fill="light yellow")+
   labs(title="Histograma SGRc", x="SGRc (crecimiento)", 
        y="Frecuencia")+ Mi_gráfico
 ```
@@ -91,14 +88,16 @@ ggplot(BDatos_mod, aes(SGRc_porc))+theme_gray()+
 Los gráficos de caja a partir de Centro de cultivo para las variables FCRc y SGRc indican diversa variabilidad de los datos entre centros y valores atípicos que deben investigarse para su probable eliminación.
 
 ```{r}
-ggplot(BDatos_mod , aes(x= Centro , y=FCRc_porc , fill= Centro)) +
-    geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="FCRc")+ Mi_gráfico
+BDatos_mod <- BDatos_mod %>% mutate (ID_Centro= substr(Centro,1,3))
+```
+
+```{r}
+ggplot(BDatos_mod , aes(x=reorder(ID_Centro , FCRc_porc) , y=FCRc_porc , fill= ID_Centro)) + geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="FCRc")+ Mi_gráfico
 ```
 
 
-
 ```{r}
-ggplot(BDatos_mod , aes(x=Centro , y=SGRc_porc ,fill=Centro)) +
+ggplot(BDatos_mod , aes(x= reorder(ID_Centro ,SGRc_porc), y=SGRc_porc ,fill=ID_Centro)) +
     geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="SGRc")+ Mi_gráfico
 ```
 
