@@ -6,6 +6,7 @@ output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 library(datasets)
 library(ggplot2)
 library(readxl)
@@ -14,6 +15,7 @@ library(dplyr)
 library(lme4)
 library(graphics)
 library(stats)
+library(stringr)
 ```
 
 ### Base de datos
@@ -34,7 +36,7 @@ En el resumen, las características de los datos de las variables recomiendan la
 BDatos$Year_class <- as.factor(BDatos$Year_class)
 BDatos$`Fecha_cosecha` <- as.factor(BDatos$`Fecha_cosecha`)
 BDatos$Jaula <-as.factor(BDatos$Jaula)
-BDatos$Centro <- as.factor(BDatos$Centro)
+BDatos$Centro <- as.factor (BDatos$Centro)
 summary(BDatos)
 str(BDatos)
 ```
@@ -50,10 +52,11 @@ plot (ecdf(BDatos$`Consumo_ bajo_ 20`))
 plot (ecdf(BDatos$FCRc))
 plot (ecdf(BDatos$SGRc))
 ```
-En la base de datos importada los valores de las variables de estudio estaban en formato "número" y para una mejor comprensión estas variables deben expresarse en porcentajes. Por lo tanto, se realiza la transformación de estas a % y se seleccionan las variables de mayor interés para el estudio preliminar.
+
+En la base de datos importada, los valores de las variables de estudio estaban en formato "número" y para una mejor comprensión estas variables deben expresarse en porcentajes. Por lo tanto, se realiza la transformación de estas a % y se seleccionan las variables de mayor interés para el estudio preliminar.
 
 
-```{r}
+```{r, BDatos_mod}
 BDatos_mod <-BDatos %>% mutate(Consumo_20=`Consumo_ bajo_ 20` *100 , FCRc_porc=FCRc*100, SGRc_porc=SGRc*100) %>% select (Year_class, Centro, Consumo_20, FCRc_porc,SGRc_porc)
 summary (BDatos_mod)
 str(BDatos_mod)
@@ -61,6 +64,8 @@ str(BDatos_mod)
 
 ```{r}
 Mi_gráfico = theme(axis.title.x = element_text(size = 16), axis.text.x = element_text(size = 12), axis.title.y = element_text(size = 16), axis.text.y = element_text(size = 12))
+Mi_gráfico_2 = theme(axis.title.x = element_text(size = 16), axis.text.x = element_text(angle =45 , vjust= 1,0 , hjust= 1,0, size = 12), axis.title.y = element_text(size = 16), axis.text.y = element_text(size = 12))
+
 ```
 
 Los histogramas construidos para las tres variables demuestran que habrían valores atípicos de manera más marcada en los datos de las variables  de consumo bajo 20% de actividad y SGRc.
@@ -85,20 +90,23 @@ ggplot(BDatos_mod, aes(SGRc_porc))+theme_gray()+
        y="Frecuencia")+ Mi_gráfico
 ```
 
-Los gráficos de caja a partir de Centro de cultivo para las variables FCRc y SGRc indican diversa variabilidad de los datos entre centros y valores atípicos que deben investigarse para su probable eliminación.
+Los gráficos de caja a partir de Centro de cultivo para las variables FCRc y SGRc indican diversa variabilidad de los datos entre centros y valores atípicos que deben investigarse para su probable eliminación. Para una mejor visualización de los gráficos, lo nombres de los centros se reemplazan en algunos casos y en otros, se utiliza como nuevo identificador las tres primeras letras del nombre.
 
 ```{r}
-BDatos_mod <- BDatos_mod %>% mutate (ID_Centro= substr(Centro,1,3))
+BDatos_mod_2 <- BDatos_mod
+BDatos_mod_2$Centro <- str_replace_all (BDatos_mod$Centro, c("Elena Norte" = "ElN", "Elena Weste"="ElW", "Punta Cola"= "PCo", "Punta Rouse"= "PRo"))
+BDatos_mod_2 <- BDatos_mod_2 %>% mutate (ID_Centro= substr(Centro,1,3))
 ```
 
+
 ```{r}
-ggplot(BDatos_mod , aes(x=reorder(ID_Centro , FCRc_porc) , y=FCRc_porc , fill= ID_Centro)) + geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="FCRc")+ Mi_gráfico
+ggplot(BDatos_mod_2 , aes(x=reorder(ID_Centro , FCRc_porc) , y=FCRc_porc , fill= ID_Centro)) + geom_boxplot(color= "brown") + labs( x="Centro de cultivo", y="FCRc") + Mi_gráfico_2
 ```
 
 
 ```{r}
-ggplot(BDatos_mod , aes(x= reorder(ID_Centro ,SGRc_porc), y=SGRc_porc ,fill=ID_Centro)) +
-    geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="SGRc")+ Mi_gráfico
+ggplot(BDatos_mod_2 , aes(x= reorder(ID_Centro ,SGRc_porc), y=SGRc_porc ,fill=ID_Centro)) +
+    geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="SGRc")+ Mi_gráfico_2
 ```
 
 En los gráficos de dispersión a partir de Consumo de alimento bajo 20% para FCRc y SFRc se puede observar la correlación entre las variables, con tendencia a aumentar el FCRc y disminuir el SGRc a medida que aumenta el consumo de alimento bajo 20% de actividad.
@@ -130,16 +138,10 @@ BDatos_top <- BDatos_gcentro %>% filter(Consumo20_prom > 12)%>%arrange (-Consumo
 ```
 
 
-```{r}
-Consumo_20 <- BDatos_mod$Consumo_20
-FCRc_porc <- BDatos_mod$FCRc_porc
-SGRc_porc <- BDatos_mod$SGRc_porc
-```
-
 En el gráfico, la línea de tendencia indica que a mayor consumo de alimento bajo el 20% de actividad el FCRc aumentaría (considerando todos los datos).
 
 ```{r}
- ggplot(BDatos_mod , aes(x= Consumo_20 , y=FCRc_porc))+ geom_smooth(method = "lm", se= TRUE , color= "blue")  + Mi_gráfico
+ ggplot(BDatos_mod , aes(x= Consumo_20 , y=FCRc_porc))+ geom_smooth(method = "lm",  se= TRUE , color= "blue") + Mi_gráfico
 ```
 
 En el gráfico, la línea de tendencia indica que a mayor consumo de alimento bajo el 20% de actividad el SGRc disminuiría (considerando todos los datos).
@@ -151,8 +153,8 @@ En el gráfico, la línea de tendencia indica que a mayor consumo de alimento ba
 Existe correlación entre las variables, sin embargo el coeficiente de correlación en ambos casos es débil
 
 ```{r}
-cor(Consumo_20 , FCRc_porc)
-cor(Consumo_20 , SGRc_porc)
+cor(BDatos_mod$Consumo_20 , BDatos_mod$FCRc_porc)
+cor(BDatos_mod$Consumo_20 , BDatos_mod$SGRc_porc)
 ```
 Cuando se considera la selección de los centros con los consumos más altos bajo 20% de de actividad y su relación con las variables FCRc y SGRc la correlación aumenta de manera considerable en ambos casos.
 La correlación entre consumo bajo 20% y FCRc es positiva, es decir, el aumento de una variable significa un aumento de la otra, a diferencia de la correlación negativa que demuestra la variable SGRC.
