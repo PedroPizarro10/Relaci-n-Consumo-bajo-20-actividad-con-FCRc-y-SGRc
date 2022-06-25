@@ -1,0 +1,100 @@
+---
+title: "Untitled"
+author: "Pedro Pizarro"
+date: '2022-06-24'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(datasets)
+library(ggplot2)
+library(readxl)
+library(tidyr)
+library(dplyr)
+library(lme4)
+library(graphics)
+library(stats)
+library(stringr)
+library(gridExtra)
+library(knitr)
+library(summarytools)
+library(stats)
+library(psych)
+library(pander)
+library(car)
+library(lmtest)
+```
+
+
+```{r}
+ ggplot(BDatos_top , aes(x= Consumo20_prom , y=FCRc_prom))+ geom_smooth(method = "lm",  se= TRUE , color= "blue")+ geom_point(color= "blue") + Mi_gráfico
+ ggplot(BDatos_top , aes(x= Consumo20_prom , y=SGRc_prom))+ geom_smooth(method = "lm",  se= TRUE , color= "blue")+ geom_point(color= "blue") + Mi_gráfico
+```
+
+```{r}
+cor(BDatos_top$Consumo20_prom , BDatos_top$FCRc_prom)
+cor(BDatos_top$Consumo20_prom , BDatos_top$SGRc_prom)
+```
+
+```{r}
+ ggplot(BDatos_gcentro , aes(x= Consumo20_prom , y=FCRc_prom))+ geom_smooth(method = "lm",  se= TRUE , color= "blue")+ geom_point(color= "blue") + Mi_gráfico
+ ggplot(BDatos_gcentro , aes(x= Consumo20_prom , y=SGRc_prom))+ geom_smooth(method = "lm",  se= TRUE , color= "blue")+ geom_point(color= "blue") + Mi_gráfico
+
+```
+```{r}
+cor(BDatos_gcentro$Consumo20_prom , BDatos_gcentro$FCRc_prom)
+cor(BDatos_gcentro$Consumo20_prom , BDatos_gcentro$SGRc_prom)
+```
+
+```{r anova1}
+anova1 <- lm(FCRc_porc ~ Consumo_20, data=BDatos_mod)
+anova(anova1)
+
+```
+
+```{r}
+summary(anova1)
+anova(anova1)%>% kable(digits = 3)
+```
+
+```{r}
+anova2 <- lm(FCRc_porc ~ Centro, data=BDatos_mod)
+anova(anova2)
+summary(anova2)
+```
+
+```{r}
+plot(anova1$residuals, pch=20, col = "blue",
+cex.lab=1.25, cex.axis=1.25)
+```
+```{r}
+dwtest(FCRc_porc ~ Consumo_20, data=BDatos_mod, alternative = c("two.sided"), iterations = 15)
+
+```
+Con otros datos
+
+```{r anova SGR}
+anova3 <- lm(SGRc_porc ~ Consumo_20, data=BDatos_mod)
+anova(anova3)
+summary(anova3)
+```
+
+```{r plot SGR}
+plot(anova3$residuals, pch=20, col = "blue",
+cex.lab=1.25, cex.axis=1.25)
+```
+
+```{r DW SGR}
+dwtest(SGRc_porc ~ Consumo_20, data=BDatos_mod, alternative = c("two.sided"), iterations = 15)
+
+```
+Con tabla gcentro
+
+```{r anova gcentro}
+anova4 <- lm(FCRc_prom ~ Consumo20_prom, data=BDatos_gcentro)
+anova(anova4)
+
+```
+

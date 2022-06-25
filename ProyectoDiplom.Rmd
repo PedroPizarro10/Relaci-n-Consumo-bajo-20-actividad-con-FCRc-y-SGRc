@@ -18,6 +18,12 @@ library(stats)
 library(stringr)
 library(gridExtra)
 library(knitr)
+library(summarytools)
+library(stats)
+library(psych)
+library(pander)
+library(car)
+library(lmtest)
 ```
 
 ### Base de datos
@@ -28,6 +34,11 @@ Los datos a utilizar corresponden a una base de datos con 7 variables: Año de c
 read_excel("Base_Datos_Cons_FCR_SGR.xlsx")
 BDatos <-read_excel("Base_Datos_Cons_FCR_SGR.xlsx")
 ```
+```{r, }
+dfSummary(BDatos, style = "grid")
+
+```
+
 
 ```{r}
 summary(BDatos)
@@ -60,6 +71,8 @@ En la base de datos importada, los valores de las variables de estudio estaban e
 
 ```{r, BDatos_mod}
 BDatos_mod <-BDatos %>% mutate(Consumo_20=`Consumo_ bajo_ 20` *100 , FCRc_porc=FCRc*100, SGRc_porc=SGRc*100) %>% select (Year_class, Centro, Consumo_20, FCRc_porc,SGRc_porc)
+BDatos_mod$Centro <- as.factor(BDatos_mod$Centro)
+BDatos_mod$Year_class <- as.factor(BDatos_mod$Year_class)
 summary (BDatos_mod)
 str(BDatos_mod)
 ```
@@ -137,6 +150,7 @@ Se construye una nueva tabla agrupando por Centro y considerando el promedio de 
 ```{r}
 BDatos_mod %>% group_by(Centro) %>% summarise(Consumo20_prom = mean(Consumo_20), FCRc_prom = mean(FCRc_porc), SGRc_prom =mean(SGRc_porc))   
 BDatos_gcentro <- BDatos_mod %>% group_by(Centro) %>% summarise(Consumo20_prom = mean(Consumo_20), FCRc_prom = mean(FCRc_porc), SGRc_prom =mean(SGRc_porc))   
+BDatos_gcentro$Centro <- as.factor(BDatos_gcentro$Centro)
 
 ```
 
@@ -152,14 +166,14 @@ BDatos_top <- BDatos_gcentro %>% filter(Consumo20_prom > 12)%>%arrange (-Consumo
 En el gráfico, la línea de tendencia indica que a mayor consumo de alimento bajo el 20% de actividad el FCRc aumentaría (considerando todos los datos).
 
 ```{r}
- ggplot(BDatos_mod , aes(x= Consumo_20 , y=FCRc_porc))+ geom_smooth(method = "lm",  se= TRUE , color= "blue") + Mi_gráfico
+ ggplot(BDatos_mod , aes(x= Consumo_20 , y=FCRc_porc))+ geom_smooth(method = "lm",  se= TRUE , color= "blue")+ geom_point(color= "blue") + Mi_gráfico
 ```
 
 
 En el gráfico, la línea de tendencia indica que a mayor consumo de alimento bajo el 20% de actividad el SGRc disminuiría (considerando todos los datos).
 
 ```{r}
- ggplot(BDatos_mod , aes(x= Consumo_20 , y=SGRc_porc))+ geom_smooth(method = "lm", se= TRUE, color= "red")  + Mi_gráfico
+ ggplot(BDatos_mod , aes(x= Consumo_20 , y=SGRc_porc))+ geom_smooth(method = "lm", se= TRUE, color= "red") + geom_point(color= "red") + Mi_gráfico
 ```
 
 Existe correlación entre las variables, sin embargo el coeficiente de correlación en ambos casos es débil
@@ -178,9 +192,13 @@ head(BDatos_top)
 cor(BDatos_top$Consumo20_prom , BDatos_top$FCRc_prom)
 cor(BDatos_top$Consumo20_prom , BDatos_top$SGRc_prom)
 ```
+Prueba de correlación de Pearson
 
+```{r}
+P_cor <-cor.test(x=BDatos_mod$Consumo_20 , y=BDatos_mod$FCRc_porc , method = "pearson", conf.level = 0.95)
+pander::pander(P_cor, caption = "Prueba de hipótesis para el coeficiente de correlación entre Consumo bajo 20% y FCRc.")
 
-
+```
 
 
 
