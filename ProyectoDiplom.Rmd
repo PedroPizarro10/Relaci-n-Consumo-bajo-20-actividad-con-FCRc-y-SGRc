@@ -12,7 +12,6 @@ library(ggplot2)
 library(readxl)
 library(tidyr)
 library(dplyr)
-library(lme4)
 library(graphics)
 library(stats)
 library(stringr)
@@ -24,6 +23,18 @@ library(psych)
 library(pander)
 library(car)
 library(lmtest)
+library(lme4)
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(psych)
+library(car)
+library(nlme)
+library(lme4)
+library(readr)
+library(lmtest)
+library(sjPlot)
+library(multcomp)
 ```
 
 ### Base de datos
@@ -34,7 +45,9 @@ Los datos a utilizar corresponden a una base de datos con 7 variables: Año de c
 read_excel("Base_Datos_Cons_FCR_SGR.xlsx")
 BDatos <-read_excel("Base_Datos_Cons_FCR_SGR.xlsx")
 ```
-```{r, }
+
+
+```{r,}
 dfSummary(BDatos, style = "grid")
 
 ```
@@ -68,19 +81,16 @@ plot (ecdf(BDatos$SGRc))
 
 En la base de datos importada, los valores de las variables de estudio estaban en formato "número" y para una mejor comprensión estas variables deben expresarse en porcentajes. Por lo tanto, se realiza la transformación de estas a % y se seleccionan las variables de mayor interés para el estudio preliminar.
 
-
 ```{r, BDatos_mod}
-BDatos_mod <-BDatos %>% mutate(Consumo_20=`Consumo_ bajo_ 20` *100 , FCRc_porc=FCRc*100, SGRc_porc=SGRc*100) %>% select (Year_class, Centro, Consumo_20, FCRc_porc,SGRc_porc)
-BDatos_mod$Centro <- as.factor(BDatos_mod$Centro)
-BDatos_mod$Year_class <- as.factor(BDatos_mod$Year_class)
+BDatos_mod <- BDatos %>% mutate(Consumo_20=`Consumo_ bajo_ 20` *100 , FCRc_porc=FCRc*100, SGRc_porc=SGRc*100) # %>% select(Year_class, Centro,Jaula, Consumo_20,FCRc_porc,SGRc_porc)
 summary (BDatos_mod)
 str(BDatos_mod)
 ```
 
+
 ```{r}
 Mi_gráfico = theme(axis.title.x = element_text(size = 12), axis.text.x = element_text(size = 12), axis.title.y = element_text(size = 12), axis.text.y = element_text(size = 12))
 Mi_gráfico_2 = theme(axis.title.x = element_text(size = 16), axis.text.x = element_text(angle =45 , vjust= 1,0 , hjust= 1,0, size = 12), axis.title.y = element_text(size = 16), axis.text.y = element_text(size = 12))
-
 ```
 
 Los histogramas construidos para las tres variables demuestran que habrían valores atípicos de manera más marcada en los datos de las variables  de consumo bajo 20% de actividad y SGRc.
@@ -119,30 +129,30 @@ BDatos_mod_2 <- BDatos_mod_2 %>% mutate (ID_Centro= substr(Centro,1,3))
 
 
 ```{r}
-ggplot(BDatos_mod_2 , aes(x=reorder(ID_Centro , FCRc_porc) , y=FCRc_porc , fill= ID_Centro)) + geom_boxplot(color= "brown") + labs( x="Centro de cultivo", y="FCRc") + Mi_gráfico_2
+ggplot(BDatos_mod_2 , aes(x=reorder(ID_Centro , FCRc_porc) , y=FCRc_porc , fill= Centro)) + geom_boxplot(color= "brown") + labs( x="Centro de cultivo", y="FCRc") + Mi_gráfico_2
 ```
 
 
 ```{r}
-ggplot(BDatos_mod_2 , aes(x= reorder(ID_Centro ,SGRc_porc), y=SGRc_porc ,fill=ID_Centro)) +
+ggplot(BDatos_mod_2 , aes(x= reorder(ID_Centro ,SGRc_porc), y=SGRc_porc ,fill=Centro)) +
     geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="SGRc")+ Mi_gráfico_2
 ```
 
 ```{r}
-ggplot(BDatos_mod_2 , aes(x= reorder(ID_Centro , Consumo_20), y= Consumo_20 ,fill=ID_Centro)) +
+ggplot(BDatos_mod_2 , aes(x= reorder(ID_Centro , Consumo_20), y= Consumo_20 ,fill=Centro)) +
     geom_boxplot(color= "brown") + labs( x="Centro de cultivo" , y="Consumo bajo 20% actividad")+ Mi_gráfico_2
 ```
 
 En los gráficos de dispersión a partir de Consumo de alimento bajo 20% para FCRc y SFRc se puede observar la correlación entre las variables, con tendencia a aumentar el FCRc y disminuir el SGRc a medida que aumenta el consumo de alimento bajo 20% de actividad.
 
 ```{r}
-ggplot(BDatos_mod , aes(x= Consumo_20 , y=FCRc_porc)) +
-    geom_point(color= "blue") + labs( x="Consumo bajo 20% actividad" , y="FCRc")+ Mi_gráfico
+ggplot(BDatos_mod , aes(x= Consumo_20 , y=FCRc_porc, color = Centro)) +
+    geom_point() + labs( x="Consumo bajo 20% actividad" , y="FCRc")+ Mi_gráfico
 ```
 
 ```{r}
-ggplot(BDatos_mod , aes(x= Consumo_20 , y=SGRc_porc)) +
-    geom_point (color= "brown") + labs( x="Consumo bajo 20% actividad" , y="SGRc")+ Mi_gráfico
+ggplot(BDatos_mod , aes(x= Consumo_20 , y=SGRc_porc, color= Centro)) +
+    geom_point () + labs( x="Consumo bajo 20% actividad" , y="SGRc")+ Mi_gráfico
 ```
 
 Se construye una nueva tabla agrupando por Centro y considerando el promedio de cada variable de estudio.
@@ -166,14 +176,14 @@ BDatos_top <- BDatos_gcentro %>% filter(Consumo20_prom > 12)%>%arrange (-Consumo
 En el gráfico, la línea de tendencia indica que a mayor consumo de alimento bajo el 20% de actividad el FCRc aumentaría (considerando todos los datos).
 
 ```{r}
- ggplot(BDatos_mod , aes(x= Consumo_20 , y=FCRc_porc))+ geom_smooth(method = "lm",  se= TRUE , color= "blue")+ geom_point(color= "blue") + Mi_gráfico
+ ggplot(BDatos_mod , aes(x= Consumo_20 , y=FCRc_porc))+ geom_smooth(method = "lm", formula = "y~x" , se= TRUE , color= "blue")+ geom_point(color= "blue") + Mi_gráfico
 ```
 
 
 En el gráfico, la línea de tendencia indica que a mayor consumo de alimento bajo el 20% de actividad el SGRc disminuiría (considerando todos los datos).
 
 ```{r}
- ggplot(BDatos_mod , aes(x= Consumo_20 , y=SGRc_porc))+ geom_smooth(method = "lm", se= TRUE, color= "red") + geom_point(color= "red") + Mi_gráfico
+ ggplot(BDatos_mod , aes(x= Consumo_20 , y=SGRc_porc)) + geom_smooth(method = "lm", formula= "y~x", se= TRUE, color= "red") + geom_point(color="red") + Mi_gráfico
 ```
 
 Existe correlación entre las variables, sin embargo el coeficiente de correlación en ambos casos es débil
@@ -192,13 +202,88 @@ head(BDatos_top)
 cor(BDatos_top$Consumo20_prom , BDatos_top$FCRc_prom)
 cor(BDatos_top$Consumo20_prom , BDatos_top$SGRc_prom)
 ```
-Prueba de correlación de Pearson
+### Prueba de correlación de Pearson
 
 ```{r}
 P_cor <-cor.test(x=BDatos_mod$Consumo_20 , y=BDatos_mod$FCRc_porc , method = "pearson", conf.level = 0.95)
 pander::pander(P_cor, caption = "Prueba de hipótesis para el coeficiente de correlación entre Consumo bajo 20% y FCRc.")
+```
+## Modelo 
+
+```{r anova}
+Modelo <- lmer(FCRc_porc ~ Consumo_20 + (1 | Centro), data = BDatos_mod)
+```
+
+## Evaluación de supuestos
+
+## Independencia de las muestras
+
+Se establecen las hipótesis nula y alternativa para correlación.
+
+H0 = No existe autocorrelación
+H1 = Existe autocorrelación
+
+De acuerdo a la Prueba de Ljung-Box efectuada el p-value > 0,005 , por lo tanto se acepta H0 y no existe autocorrelación
+
+```{r}
+# Test de Durbin Watson 
+#dwtest(FCRc_porc ~ Consumo_20 + (1 | Centro), data = BDatos_mod, alternative = c("two.sided"), iterations = 15)
+
+# Test de Breusch-Godfrey
+# bgtest(Modelo)                      # (similares errores con DW)
+
+#Test de Ljung-Box
+Box.test(residuals(Modelo), type = "Ljung-Box")
 
 ```
 
+## Homogeneidad de las varianzas
+
+```{r}
+#lv <- leveneTest(Peso ~ Tratamiento, data = my_data, center = "median") 
+#lv %>% kable(digits = 3)
+
+# leveneTest(FCRc_porc ~ Consumo_20 + (1 | Centro), data = BDatos_mod, center = "median")
+
+# bartlett.test(FCRc_porc ~ Consumo_20 + (1 | Centro), data = BDatos_mod)
+
+
+# studentized Breusch-Pagan test
+
+#bptest(Modelo)
+
+
+```
+
+## Normalidad
+
+```{r}
+
+# Test de Shapiro - Wilk
+
+# shapiro.test(Modelo)
+
+# shapiro.test(BDatos_mod$Consumo_20)
+
+```
+
+
+## Análisis del modelo
+
+```{r}
+anova(Modelo)
+summary(Modelo)
+coef(summary(Modelo))
+VarCorr(Modelo)
+tab_model(Modelo, show.se = TRUE, show.aic=TRUE)
+
+```
+
+
+```{r}
+# Modelo2 <- lmer(FCRc_porc ~ Consumo_20 + (1 | Jaula), data = BDatos_mod)
+# Modelo3 <- lmer(FCRc_porc ~ Consumo_20 + Centro + (1|Jaula), data = BDatos_mod)
+
+```
 
 

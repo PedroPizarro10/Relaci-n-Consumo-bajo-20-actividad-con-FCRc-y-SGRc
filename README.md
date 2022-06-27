@@ -19,6 +19,6 @@ de crecimiento (**SGRc**) al término del ciclo para corroborar o descartar la h
 
 ## Número de observaciones
 
-La base de datos contiene **271 observaciones**.
+La base de datos contiene **273 observaciones**.
 
 
