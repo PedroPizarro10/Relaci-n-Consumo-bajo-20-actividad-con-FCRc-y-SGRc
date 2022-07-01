@@ -1,0 +1,186 @@
+---
+title: "Untitled"
+author: "Pedro Pizarro"
+date: '2022-06-24'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(datasets)
+library(ggplot2)
+library(readxl)
+library(tidyr)
+library(dplyr)
+library(graphics)
+library(stats)
+library(stringr)
+library(gridExtra)
+library(knitr)
+library(summarytools)
+library(stats)
+library(psych)
+library(pander)
+library(car)
+library(lmtest)
+library(lme4)
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(psych)
+library(car)
+library(nlme)
+library(lme4)
+library(readr)
+library(lmtest)
+library(sjPlot)
+library(multcomp)
+```
+
+
+### Modelo 1
+
+FCR= Consumo + (1|Centro)
+
+
+```{r}
+Modelo1 <- lmer(FCRc_porc ~ Consumo_20  + (1 | Centro), data = BDatos_mod)
+summary(Modelo1)
+```
+
+```{r}
+tab_model(Modelo1, show.se = TRUE, show.aic=TRUE)
+```
+
+
+## Evaluación de supuestosm Modelo 1
+
+## Independencia de las muestras
+
+```{r}
+ #Test de Durbin Watson
+
+dwtest(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod, 
+       alternative = c("two.sided"), iterations = 15)
+
+# Test de Breusch-Godfrey
+
+bgtest(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod)
+bgtest(FCRc_porc ~ Consumo_20 + Centro , data = BDatos_mod)
+
+
+# (similares errores con DW)
+
+#Test de Ljung-Box
+
+Box.test(residuals(Modelo1), type = "Ljung-Box")
+```
+## Homogeneidad de las varianzas
+
+```{r}
+
+# Ejemplo: lv <- leveneTest(Peso ~ Tratamiento, data = my_data, center = "median") #lv %>% kable(digits = 3)
+
+
+leveneTest(FCRc_porc ~ Year_class * Centro, data = BDatos_mod, center = "median")
+leveneTest(FCRc_porc ~ Centro, data = BDatos_mod, center = "median")
+
+# Eliminado el dato Consumo_20 ya que Levene no procesa factores cuantitativos
+# No se pueden asociar los factores de manera condicional con | ya que centro y año son independientes
+# Oberva las diferencias al incluir el año en el analisis
+
+# 2. bartlett.test
+
+bartlett.test(FCRc_porc ~ Centro, data = BDatos_mod)
+
+# bartlett.test como kruskal.test debe considerar mas de 2 observaciones por grupo y deben existir mas de 2 grupos para realizar el analsis, por lo cual no se puede utilizar Consumo_20 ya que es un valor especifico para cada FCR y año porque solo presentas los datos 2021 y 2022
+
+# 3. studentized Breusch-Pagan test
+
+bptest(FCRc_porc ~ Consumo_20 + Centro , data = BDatos_mod)
+
+#plot(Modelo, 1, pch=20, col = "blue", cex.lab=1.5, cex.axis=1.5, sub = "")
+
+```
+
+## Normalidad
+
+```{r}
+# Test de Shapiro - Wilk
+
+#shapiro.test(Modelo1)
+
+shapiro.test (residuals(Modelo1))
+
+#shapiro.test(BDatos_mod$Consumo_20)
+
+```
+
+
+
+## Modelo 2
+
+FCR= Consumo * Year_class + (1|Centro)
+
+```{r}
+Modelo2 <- lmer(FCRc_porc ~ Consumo_20 * Year_class + (1 | Centro), data = BDatos_mod)
+summary(Modelo2)
+```
+
+```{r}
+tab_model(Modelo2, show.se = TRUE, show.aic=TRUE)
+```
+
+
+```{r}
+AIC(Lineal,Modelo2) %>% kable()
+```
+
+
+## Evaluación de supuestos
+
+## Independencia de las muestras
+
+```{r}
+dwtest(FCRc_porc ~ Consumo_20 + Centro, data=BDatos_mod, alternative = c("two.sided"), iterations = 15)
+
+```
+## Homogeneidad de las varianzas
+
+
+```{r}
+
+
+```
+## Normalidad
+
+
+```{r}
+
+#shapiro.test(Lineal)
+qqPlot(Lineal)
+plot(Lineal, 2, pch=20, col = "blue")
+
+```
+
+
+
+
+
+
+
+
+
+```{r}
+ggplot(BDatos_mod_2 , aes(x= Centro , y=FCRc_porc, color = Centro))+ geom_smooth(method = "lm", formula= "y~x", se= TRUE , color= "blue")+ geom_point() + Mi_gráfico_2
+       
+```
+
+```{r}
+ggplot(BDatos_mod_2 , aes(x=reorder(Consumo_20 , FCRc_porc) , y=FCRc_porc )) + geom_point(color= "brown") + labs( x="Consumo 20%", y="FCRc") + Mi_gráfico
+
+```
+```{r}
+r2_nakagawa(Modelo)
+```

@@ -24,7 +24,7 @@ La base de datos contiene **273 observaciones**.
 
 ### Hipótesis de Prueba
 
-Para comprobar si el mayor consumo de alimento bajo la fase de actividad del 20% afecta el rendimiento productivo, en este caso se eligió contrastar a través de análisis estadístico, el consumo en esta fase con la variable de conversión de alimento, ya que por su naturaleza es la variable respuesta que se relaciona de mejor manera con la variable consumo. De este modo, las hipótesis nula y alternativa a contrastar serían:
+Para comprobar si el consumo de alimento bajo la fase de actividad del 20% afecta el rendimiento productivo, en este caso se eligió contrastar a través de análisis estadístico, el consumo en esta fase con la variable de conversión de alimento, ya que por su naturaleza es la variable respuesta que se relaciona de mejor manera con la variable consumo. De este modo, las hipótesis nula y alternativa a contrastar serían:
 
  **H~0~:** El consumo de alimento bajo 20% de actividad **_no afecta el FCR._**
 
@@ -32,9 +32,15 @@ Para comprobar si el mayor consumo de alimento bajo la fase de actividad del 20%
 
 ### Resumen de métodos estadísticos
 
-
+- Se verifica la correlación entre la variable respuesta FCR y Consumo bajo 20% de actividad mediante test de Pearson.
+- Se establece un modelo lineal de la variable FCR en función de Consumo bajo 20% de actividad, Centro y Año de cultivo
+- Se aplican test para evaluación de supuestos de independencia, homogeneidad de varianzas y normalidad.
+- Se aplica un análisis de varianza de 3 factores para determinar si los efectos de los factores son o no significativos en la variable respuesta.
+- Se determina nivel de significancia del modelo y capacidad predictora
 
 ### Conclusión del Trabajo
+
+De acuerdo a los análisis estadísticos realizados, se rechaza la hipótesis nula y se concluye que el consumo de alimento bajo 20% de actividad, así como también la variable centro afectan el factor de conversión de los peces (FCR).
 
  
 

@@ -40,13 +40,13 @@ library(kableExtra)
 
 ### Base de datos
 
-Los datos a utilizar corresponden a una base de datos con 7 variables: Año de cultivo **(Year_class)**, unidad de cultivo **(Jaula)** ,fecha en que se cosechó la jaula **(Fecha_cosecha)**, el alimento consumido bajo 20% de actividad **(Consumo_bajo_20)**, factor de conversión corregido **(FCRc)** y tasa de crecimiento específica corregida **(SGRc)**. Los datos están balanceados.
+Los datos a utilizar corresponden a una base de datos con 7 variables: Año de cultivo **(Year_class)**, unidad de cultivo **(Jaula)** ,fecha en que se cosechó la jaula **(Fecha_cosecha)**, el alimento consumido bajo 20% de actividad **(Consumo_bajo_20)**, factor de conversión corregido **(FCRc)** y tasa de crecimiento específica corregida **(SGRc)**.
 
 ```{r}
 read_excel("Base_Datos_Cons_FCR_SGR.xlsx")
 BDatos <-read_excel("Base_Datos_Cons_FCR_SGR.xlsx")
 ```
-
+De acuerdo a la tabla, se puede identificar que los datos están balanceados y que no hay valores perdidos.
 
 ```{r,}
 dfSummary(BDatos, style = "grid")
@@ -88,7 +88,8 @@ BDatos_mod <- BDatos %>%
   dplyr::select(c(Year_class, Centro,Jaula, Consumo_20, FCRc_porc, SGRc_porc))
 summary(BDatos_mod)
 str(BDatos_mod)
-```
+``` 
+Los gráficos de caja de las variables de estudio, indican la presencia de valores atípicos que deben ser investigados para su probable eliminación al momento de hacer el análisis estadístico. 
 
 ```{r}
 par(mfrow=c(2,2))
@@ -199,45 +200,59 @@ En el gráfico, la línea de tendencia indica que a mayor consumo de alimento ba
  ggplot(BDatos_mod , aes(x= Consumo_20 , y=SGRc_porc)) + geom_smooth(method = "lm", formula= "y~x", se= TRUE, color= "red") + geom_point(color="red") + Mi_gráfico
 ```
 
-Existe correlación entre las variables, sin embargo el coeficiente de correlación en ambos casos es débil
+## Correlación entre las variables
+
+### -Prueba de correlación de Pearson
+
+**H~0~:** : ρ = 0 ausencia de correlación.
+
+**H~1~:** : ρ ̸= 0 existencia de correlación.    
+
+Se acepta la hipótesis alternativa. Existe correlación entre las variables, sin embargo el coeficiente de correlación en ambos casos es débil
 
 ```{r}
-cor(BDatos_mod$Consumo_20 , BDatos_mod$FCRc_porc)
-cor(BDatos_mod$Consumo_20 , BDatos_mod$SGRc_porc)
+P_cor <-cor.test(x=BDatos_mod$Consumo_20 , y=BDatos_mod$FCRc_porc , method = "pearson", conf.level = 0.95)
+pander::pander(P_cor, caption = "Prueba de hipótesis para el coeficiente de correlación entre Consumo bajo 20% y FCRc.")
+P_cor <-cor.test(x=BDatos_mod$Consumo_20 , y=BDatos_mod$SGRc_porc , method = "pearson", conf.level = 0.95)
+pander::pander(P_cor, caption = "Prueba de hipótesis para el coeficiente de correlación entre Consumo bajo 20% y SGRc.")
 ```
+
 Cuando se considera la selección de los centros con los consumos más altos bajo 20% de de actividad y su relación con las variables FCRc y SGRc la correlación aumenta de manera considerable en ambos casos.
 La correlación entre consumo bajo 20% y FCRc es positiva, es decir, el aumento de una variable significa un aumento de la otra, a diferencia de la correlación negativa que demuestra la variable SGRC.
 
 ```{r}
 head(BDatos_top)
 ```
-```{r}
-cor(BDatos_top$Consumo20_prom , BDatos_top$FCRc_prom)
-cor(BDatos_top$Consumo20_prom , BDatos_top$SGRc_prom)
-```
-### Prueba de correlación de Pearson
 
-**H~0~:** : ρ = 0 ausencia de correlación.
-
-**H~1~:** : ρ ̸= 0 existencia de correlación.    
-
-Se acepta H0
-
+Cuando se considera la selección de los centros con los consumos más altos bajo 20% de de actividad y su relación con las variables FCRc y SGRc la correlación aumenta de manera considerable en ambos casos.
+La correlación entre consumo bajo 20% y FCRc es positiva, es decir, el aumento de una variable significa un aumento de la otra, a diferencia de la correlación negativa que demuestra la variable SGRC.
 
 ```{r}
-P_cor <-cor.test(x=BDatos_mod$Consumo_20 , y=BDatos_mod$FCRc_porc , method = "pearson", conf.level = 0.95)
-pander::pander(P_cor, caption = "Prueba de hipótesis para el coeficiente de correlación entre Consumo bajo 20% y FCRc.")
+P_cor <-cor.test(x=BDatos_top$Consumo20_prom , y=BDatos_top$FCRc_prom , method = "pearson", conf.level = 0.95)
+pander::pander(P_cor, caption = "Prueba de hipótesis para r entre centros con mayores consumo bajo 20% de actividad y FCRc.")
+P_cor <-cor.test(x=BDatos_top$Consumo20_prom , y=BDatos_top$SGRc_prom , method = "pearson", conf.level = 0.95)
+pander::pander(P_cor, caption = "Prueba de hipótesis para r entre centros con mayores consumo bajo 20% de actividad y SGRc.")
 ```
 
-## Modelo
+## Planteamiento de hipótesis y definición del modelo
 
+Para comprobar si el consumo de alimento bajo la fase de actividad del 20% afecta el rendimiento productivo, en este caso se eligió contrastar a través de análisis estadístico, el consumo en esta fase con la variable de conversión de alimento, ya que por su naturaleza es la variable respuesta que se relaciona de mejor manera con la variable consumo. De este modo, las hipótesis nula y alternativa a contrastar serían:
+
+ **H~0~:** El consumo de alimento bajo 20% de actividad **_no afecta el FCR._**
+
+ **H~1~:** El consumo de alimento bajo 20% de actividad  **_afecta el FCR._**
+
+Se plantea un modelo que define al FCRc como variable respuesta en función de las variables consumo bajo 20% de actividad, centro de cultivo y año de cultivo.
 
 ```{r}
 Lineal <- lm(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod)
 ```
 
+## Evaluación de los supuestos del modelo
 
-## Evaluación gráfica de supuestos
+### -Evaluación gráfica de supuestos
+
+La evaluación gráfica indicaría que se estarían cumpliendo los supuestos de independencia, homogeneidad de varianzas y normalidad.
 
 ```{r}
 par(mfrow=c(2,3))
@@ -245,52 +260,51 @@ plot(Lineal, col="blue")
 ```
 
 
-## Evaluación de supuestosm Modelo Lineal
+## Evaluación estadística de supuestos
 
-## Independencia de las muestras
+### -Independencia de las muestras
 
 Se establecen las hipótesis nula y alternativa para correlación.
 
-**H~0~:** No existe autocorrelación
+**H~0~:** No existe autocorrelación entre los residuales
 
-**H~1~:** Existe autocorrelación
+**H~1~:** Existe autocorrelación entre los residuales
 
-
-De acuerdo a la Prueba de Durbin-Watson efectuada el p-value > 0,005 , por lo tanto se acepta H0 y no existe autocorrelación
-
+De acuerdo a la Prueba de Durbin-Watson efectuada el p-value > 0,05 , por lo tanto se acepta H0 y no existe autocorrelación entre los residuales.
 
 ```{r}
-
-dwtest(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod, 
-       alternative = c("two.sided"), iterations = 15)
+dwtest(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod, alternative = c("two.sided"), iterations = 15)
 ```
 
+### -Homogeneidad de las varianzas
 
-## Homogeneidad de las varianzas
+**H~0~:** Las varianzas de los residuos son iguales
 
-**H~0~:** 
-**H~1~:** 
+**H~1~:** Las varianzas de los residuos no son iguales
 
 
-studentized Breusch-Pagan test
+De acuerdo a la prueba de Breusch-Pagan aplicada, el p- value > 0,05, por lo tanto se acepta H0.
 
 ```{r}
 bptest(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod) 
 ```
 
 
-## Normalidad
+### -Normalidad
 
-H0: La distribución es normal.
-HA: La distribución no es normal.
+**H~0~:** La distribución de la variable es normal
+
+**H~1~:** La distribución de la variable no es normal
+
+
+De acuerdo a la prueba de Shapiro-Wilk aplicada el p-value < 0,05, por lo tanto se rechaza H0 y se concluye que la distribución de los datos no es normal.
 
 ```{r}
 shapiro.test (residuals(Lineal))
-
 ```
+## Eliminación de valores atípicos
 
-
-## Eliminación valores atípicos
+Se eliminan los valores atípicos detectados en la gráfica de residuales estandarizados con valores de distancia de Cook mayores a 2 y -2. Estas serían las observaciones 81, 106 y 107 de la base de datos "BDatos-mod". Se crea una nueva base con estas observaciones excluidas "BDatos_mod_f".
 
 ```{r}
 BDatos_mod_f <- BDatos_mod[-c(81, 106,107),]
@@ -300,20 +314,31 @@ plot(Lineal2, col= "blue")
 shapiro.test(residuals(Lineal2))
 ```
 
+Al aplicar de nuevo los test de evaluación de supuestos sobre el modelo con estos datos corregidos, se cumplen ahora todos los supuestos evaluados.
 
-````{r}
-anova <- anova(Lineal2)  
-anova %>% kable(digits = 2)
-summary(Lineal2)
-
+```{r}
+dwtest(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod_f, alternative = c("two.sided"), iterations = 15)
+bptest(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod_f)
+shapiro.test(residuals(Lineal2))
 ```
 
+Se realiza un análisis de varianza al nuevo modelo. Los valores de F encontrados indican que tanto las variables consumo bajo 20% de actividad como Centro afectan a la variable respuesta. Asimismo, esto no ocurre con la variable Year class.
 
+````{r}
+anova <- anova(Lineal2) 
+pander::pander(anova, caption = "ANOVA de tres factores sobre la variable FCRc.")
+```
 
+En la tabla resumen se observa un p-value < 0,05, lo que indica que el modelo tiene capacidad predictiva y el valor de R2 ajustado indica que el modelo tiene una proporción de predicción de 55%, debido a la alta variabilidad de la variable respuesta.
 
 ```{r}
 tab_model(Lineal2, show.se = TRUE, show.aic=TRUE)
+summary(Lineal2)
 ```
+
+## Conclusión
+
+De acuerdo a los análisis estadísticos realizados, se rechaza la hipótesis nula y se concluye que el consumo de alimento bajo 20% de actividad, pero también la variable centro afectan el factor de conversión de los peces (FCR).
 
 
 

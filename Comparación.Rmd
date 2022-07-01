@@ -1,0 +1,248 @@
+---
+title: "Untitled"
+author: "Pedro Pizarro"
+date: '2022-06-24'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(datasets)
+library(ggplot2)
+library(readxl)
+library(tidyr)
+library(dplyr)
+library(graphics)
+library(stats)
+library(stringr)
+library(gridExtra)
+library(knitr)
+library(summarytools)
+library(stats)
+library(psych)
+library(pander)
+library(car)
+library(lmtest)
+library(lme4)
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(psych)
+library(car)
+library(nlme)
+library(lme4)
+library(readr)
+library(lmtest)
+library(sjPlot)
+library(multcomp)
+```
+
+
+
+```{r}
+Lineal <- lm(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod)
+plot(Lineal, 4)
+plot(Lineal)
+summary(Lineal)
+```
+
+
+```{r}
+anova(Lineal)
+```
+
+
+
+
+## Homogeneidad de las varianzas
+
+## Evaluación de supuestosm Modelo Lineal
+
+## Independencia de las muestras
+
+
+```{r}
+dwtest(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod, 
+       alternative = c("two.sided"), iterations = 15)
+```
+
+
+```{r}
+bptest(FCRc_porc ~ Consumo_20 + Centro + Year_class, data = BDatos_mod) 
+```
+
+
+## Normalidad
+
+```{r}
+shapiro.test (residuals(Lineal))
+
+```
+
+## Modelo Linea Multiple (primera opción)
+
+```{r}
+Modelo <- lmer(FCRc_porc ~ Consumo_20 * Year_class + (1 | Centro), data = BDatos_mod)
+plot(Modelo)
+summary(Modelo)
+```
+
+```{r}
+tab_model(Modelo, show.se = TRUE, show.aic=TRUE)
+```
+
+## Modelo Linea Multiple (segunda opción)
+
+```{r}
+Modelo1 <- lmer(FCRc_porc ~ Consumo_20  + (1 | Centro), data = BDatos_mod)
+summary(Modelo1)
+```
+
+```{r}
+tab_model(Modelo1, show.se = TRUE, show.aic=TRUE)
+```
+
+
+
+## Evaluación de supuestos
+
+## Independencia de las muestras
+
+Se establecen las hipótesis nula y alternativa para correlación.
+
+**H~0~:** No existe autocorrelación
+
+**H~1~:** Existe autocorrelación
+
+
+De acuerdo a la Prueba de Ljung-Box efectuada el p-value > 0,005 , por lo tanto se acepta H0 y no existe autocorrelación
+
+```{r}
+ #Test de Durbin Watson 
+#dwtest(FCRc_porc ~ Consumo_20 * Year_class + (1 | Centro), data = BDatos_mod, alternative = c("two.sided"), iterations = 15)
+
+# Test de Breusch-Godfrey
+#bgtest(Modelo)                      # (similares errores con DW)
+
+#Test de Ljung-Box
+Box.test(residuals(Modelo), type = "Ljung-Box")
+
+```
+
+## Homogeneidad de las varianzas
+
+```{r}
+#lv <- leveneTest(Peso ~ Tratamiento, data = my_data, center = "median") 
+#lv %>% kable(digits = 3)
+
+#leveneTest(FCRc_porc ~ Consumo_20 * Year_class + (1 | Centro), data = BDatos_mod, center = "median")
+
+#bartlett.test(FCRc_porc ~ Consumo_20 * Year_class + (1 | Centro), data = BDatos_mod)
+
+
+# studentized Breusch-Pagan test
+
+#bptest(Modelo)
+
+
+```
+
+## Normalidad
+
+```{r}
+
+# Test de Shapiro - Wilk
+
+#shapiro.test(Modelo)
+
+shapiro.test (residuals(Modelo))
+
+#shapiro.test(BDatos_mod$Consumo_20)
+
+```
+
+
+```{r}
+#Modelo_residuals <- residuals(object = Modelo1)
+#shapiro.test(x= Modelo1)
+
+
+```
+
+
+## Análisis del modelo
+
+```{r}
+anova(Modelo)
+summary(Modelo)
+coef(summary(Modelo))
+VarCorr(Modelo)
+tab_model(Modelo, show.se = TRUE, show.aic=TRUE)
+
+```
+
+
+
+
+```{r}
+# Modelo2 <- lmer(FCRc_porc ~ Consumo_20 + (1 | Jaula), data = BDatos_mod)
+# Modelo3 <- lmer(FCRc_porc ~ Consumo_20 + Centro + (1|Jaula), data = BDatos_mod)
+
+```
+
+
+```{r}
+Modelo4 <- lmer(FCRc_porc ~ Consumo_20 + Year_class + (1 | Centro), data = BDatos_mod)
+summary(Modelo4)
+```
+
+
+
+
+```{r}
+Modelo4 <- lm(FCRc_porc ~ Consumo_20 , data = BDatos_mod)
+summary(Modelo4)
+```
+```{r}
+#r2_nakagawa (Modelo)
+```
+
+
+
+
+```{r}
+Lineal3 <- lm(FCRc_porc ~ Consumo_20 + Centro , data = BDatos_mod_f)
+dwtest(FCRc_porc ~ Consumo_20 + Centro , data = BDatos_mod_f, alternative = c("two.sided"), iterations = 15)
+bptest(FCRc_porc ~ Consumo_20 + Centro , data = BDatos_mod_f)
+shapiro.test(residuals(Lineal3))
+
+```
+
+
+```{r}
+anova2 <- anova(Lineal3) 
+pander::pander(anova2, caption = "ANOVA a una vía de clasificación.")
+```
+```{r}
+Lineal4 <- lm(FCRc_porc ~ Consumo_20 + Centro + Consumo_20* Centro, data = BDatos_mod_f)
+dwtest(FCRc_porc ~ Consumo_20 + Centro + Consumo_20*Centro , data = BDatos_mod_f, alternative = c("two.sided"), iterations = 15)
+bptest(FCRc_porc ~ Consumo_20 + Centro +Consumo_20*Centro , data = BDatos_mod_f)
+shapiro.test(residuals(Lineal4))
+```
+```{r}
+anova3 <- anova(Lineal4) 
+pander::pander(anova3, caption = "ANOVA a una vía de clasificación.")
+```
+
+```{r}
+
+```
+
+```{r}
+Resumen <-BDatos_mod_f%>% group_by(Centro) %>%
+summarize(N= n(), Mean = mean(FCRc_porc),
+          Variance= var(FCRc_porc))
+knitr::kable(Resumen,caption ="Estimadores puntuales de media y varianza de Final_Weight(g) para las cepas Spring y B")
+```
+
